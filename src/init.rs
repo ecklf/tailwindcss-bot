@@ -4,7 +4,7 @@ use serenity::{
     model::interactions::application_command::{ApplicationCommand, ApplicationCommandOptionType},
 };
 
-pub async fn create_global_commands(http: &Http) -> Result<(), Error> {
+pub async fn set_global_commands(http: &Http) -> Result<Vec<ApplicationCommand>, Error> {
     // Listing global commands
     // let commands = ApplicationCommand::get_global_application_commands(http).await?;
     // dbg!(commands);
@@ -13,30 +13,32 @@ pub async fn create_global_commands(http: &Http) -> Result<(), Error> {
     // ApplicationCommand::delete_global_application_command(&http, CommandId(858059701580070942))
     //     .await?;
 
-    ApplicationCommand::create_global_application_command(&http, |command| {
-        command.name("ping").description("A simple ping command")
+    let commands = ApplicationCommand::set_global_application_commands(&http, |commands| {
+        commands
+            .create_application_command(|command| {
+                command.name("ping").description("A ping command")
+            })
+            .create_application_command(|command| {
+                command
+                    .name("docs")
+                    .description("Search the Tailwind CSS documentation")
+                    .create_option(|option| {
+                        option
+                            .name("term")
+                            .description("The term to search for")
+                            .kind(ApplicationCommandOptionType::String)
+                            .required(true)
+                    })
+                    .create_option(|option| {
+                        option
+                            .name("user")
+                            .description("The user to ping")
+                            .kind(ApplicationCommandOptionType::User)
+                            .required(false)
+                    })
+            })
     })
     .await?;
 
-    ApplicationCommand::create_global_application_command(&http, |command| {
-        command
-            .name("docs")
-            .description("Search the Tailwind CSS documentation")
-            .create_option(|option| {
-                option
-                    .name("term")
-                    .description("The term to search for")
-                    .kind(ApplicationCommandOptionType::String)
-                    .required(true)
-            })
-            .create_option(|option| {
-                option
-                    .name("user")
-                    .description("The user to ping")
-                    .kind(ApplicationCommandOptionType::User)
-            })
-    })
-    .await?;
-
-    Ok(())
+    Ok(commands)
 }

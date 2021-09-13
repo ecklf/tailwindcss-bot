@@ -6,16 +6,12 @@ use serenity::{
     framework::standard::StandardFramework,
     http::Http,
     model::{
-        interactions::application_command::{
-            ApplicationCommand, ApplicationCommandInteractionDataOptionValue,
-            ApplicationCommandOptionType,
-        },
-        prelude::*,
+        interactions::application_command::ApplicationCommandInteractionDataOptionValue, prelude::*,
     },
     prelude::*,
 };
 use std::env;
-use tailwind_bot::algolia::search_tailwind_docs;
+use tailwind_bot::{algolia::search_tailwind_docs, init::set_global_commands};
 
 struct Handler;
 
@@ -44,7 +40,6 @@ impl EventHandler for Handler {
                         if let Err(why) = command.create_interaction_response(&ctx.http, |response| {
                             response.kind(InteractionResponseType::ChannelMessageWithSource).interaction_response_data(|message| {
                                 message.flags(InteractionApplicationCommandCallbackDataFlags::EPHEMERAL);
-                                
                                 match doc_entries.len() {
                                     0 => {
                                         message.content(format!("No results found for `{}`!", &term))
@@ -130,34 +125,7 @@ impl EventHandler for Handler {
 
     async fn ready(&self, ctx: Context, ready: Ready) {
         println!("{} is connected!", ready.user.name);
-
-        let commands = ApplicationCommand::set_global_application_commands(&ctx.http, |commands| {
-            commands
-                .create_application_command(|command| {
-                    command.name("ping").description("A ping command")
-                })
-                .create_application_command(|command| {
-                    command
-                        .name("docs")
-                        .description("Search the Tailwind CSS documentation")
-                        .create_option(|option| {
-                            option
-                                .name("term")
-                                .description("The term to search for")
-                                .kind(ApplicationCommandOptionType::String)
-                                .required(true)
-                        })
-                        .create_option(|option| {
-                            option
-                                .name("user")
-                                .description("The user to ping")
-                                .kind(ApplicationCommandOptionType::User)
-                                .required(false)
-                        })
-                })
-        })
-        .await;
-
+        let commands = set_global_commands(&ctx.http).await;
         println!("Available global slash commands: {:#?}", commands);
     }
 }
