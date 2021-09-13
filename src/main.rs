@@ -82,13 +82,10 @@ impl EventHandler for Handler {
                         if let Some(component) = collector {
                             let user_object = match command.data.options.get(1) {
                                 Some(option) => match option.to_owned().resolved {
-                                    Some(value) => match value {
-                                        ApplicationCommandInteractionDataOptionValue::User(
-                                            user,
-                                            _member,
-                                        ) => Some(user),
-                                        _ => None,
-                                    },
+                                    Some(ApplicationCommandInteractionDataOptionValue::User(
+                                        user,
+                                        _member,
+                                    )) => Some(user),
                                     _ => None,
                                 },
                                 _ => None,
@@ -98,7 +95,8 @@ impl EventHandler for Handler {
                                 Some(user) => {
                                     format!("{}: {}", user.id.mention(), &component.data.values[0])
                                 }
-                                None => format!("{}", &component.data.values[0]),
+                                // Wrapping in "<>" hides URL preview
+                                None => format!("<{}>", &component.data.values[0]),
                             };
 
                             command
