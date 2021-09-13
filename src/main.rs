@@ -92,10 +92,14 @@ impl EventHandler for Handler {
                             };
 
                             let content = match user_object {
-                                Some(user) => {
-                                    format!("{}: {}", user.id.mention(), &component.data.values[0])
-                                }
                                 // Wrapping in "<>" hides URL preview
+                                Some(user) => {
+                                    format!(
+                                        "{}: <{}>",
+                                        user.id.mention(),
+                                        &component.data.values[0]
+                                    )
+                                }
                                 None => format!("<{}>", &component.data.values[0]),
                             };
 
