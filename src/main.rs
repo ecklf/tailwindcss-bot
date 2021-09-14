@@ -10,7 +10,7 @@ use serenity::{
     },
     prelude::*,
 };
-use std::env;
+use std::{env, time::Duration};
 use tailwind_bot::{algolia::search_tailwind_docs, init::set_global_commands};
 
 struct Handler;
@@ -48,7 +48,7 @@ impl EventHandler for Handler {
                                         message.content(format!("Displaying resuls for `{}`.\n\nPlease select a result to display:", &term)).components(|c| {
                                             c.create_action_row(|ar| {
                                                 ar.create_select_menu(|sm| {
-                                                    sm.custom_id("select");
+                                                    sm.custom_id("select_doc_entry");
                                                     sm.placeholder("Please select an entry");
                                                     sm.min_values(1);
                                                     sm.max_values(1);
@@ -76,6 +76,7 @@ impl EventHandler for Handler {
                         let message = command.get_interaction_response(&ctx.http).await.unwrap();
                         let collector = message
                             .await_component_interaction(&ctx)
+                            .timeout(Duration::from_secs(60))
                             .author_id(command.user.id)
                             .await;
 
