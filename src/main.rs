@@ -1,21 +1,40 @@
 use anyhow::Error;
 use dotenv::dotenv;
 use serenity::{
-    async_trait, framework::standard::StandardFramework, http::Http, model::prelude::*, prelude::*,
+    async_trait, framework::standard::StandardFramework, http::Http, model::channel::Message,
+    model::prelude::*, prelude::*,
 };
 use std::env;
-use tailwind_bot::{init::set_global_commands, slashcommands::tailwind::docs};
+use tailwind_bot::{
+    init::set_global_commands,
+    slashcommands::tailwind::{docs, links},
+};
 
 struct Handler;
 
 #[async_trait]
 impl EventHandler for Handler {
+    async fn message(&self, ctx: Context, msg: Message) {
+        if msg.content.to_lowercase().contains("can i ask") {
+            if let Err(why) = msg
+                .reply_mention(
+                    &ctx.http,
+                    "Please do not ask to ask. <https://dontasktoask.com>",
+                )
+                .await
+            {
+                println!("Error sending message: {}", why);
+            };
+        }
+    }
+
     async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
         if let Interaction::ApplicationCommand(command) = interaction {
             match command.data.name.as_str() {
                 "docs" => {
                     docs(&ctx, &command).await;
                 }
+                "links" => links(&ctx, &command).await,
                 _ => println!("Not implemented"),
             };
         }

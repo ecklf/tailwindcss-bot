@@ -13,18 +13,42 @@ use serenity::{
     prelude::Mentionable,
 };
 
-pub async fn docs(ctx: &Context, command: &ApplicationCommandInteraction) {
-    let search_term = command
+pub async fn links(ctx: &Context, command: &ApplicationCommandInteraction) {
+    let options = command
         .data
         .options
         .get(0)
-        .expect("Expected term option")
+        .expect("Expected link option")
         .resolved
         .as_ref()
-        .expect("Expected term string");
+        .expect("Expected string");
 
-    if let ApplicationCommandInteractionDataOptionValue::String(term) = search_term {
-        let doc_entries = match search_tailwind_docs(term).await {
+    if let ApplicationCommandInteractionDataOptionValue::String(selection_value) = options {
+        if let Err(why) = command
+            .create_interaction_response(&ctx.http, |response| {
+                response
+                    .kind(InteractionResponseType::ChannelMessageWithSource)
+                    .interaction_response_data(|message| message.content(selection_value))
+            })
+            .await
+        {
+            println!("Cannot respond to slash command: {}", why);
+        };
+    }
+}
+
+pub async fn docs(ctx: &Context, command: &ApplicationCommandInteraction) {
+    let query = command
+        .data
+        .options
+        .get(0)
+        .expect("Expected query option")
+        .resolved
+        .as_ref()
+        .expect("Expected string");
+
+    if let ApplicationCommandInteractionDataOptionValue::String(q) = query {
+        let doc_entries = match search_tailwind_docs(q).await {
             Ok(data) => data,
             _ => vec![],
         };
@@ -34,10 +58,10 @@ pub async fn docs(ctx: &Context, command: &ApplicationCommandInteraction) {
                                 message.flags(InteractionApplicationCommandCallbackDataFlags::EPHEMERAL);
                                 match doc_entries.len() {
                                     0 => {
-                                        message.content(format!("No results found for `{}`!", &term))
+                                        message.content(format!("No results found for `{}`!", &q))
                                     },
                                     _ => {
-                                        message.content(format!("Displaying resuls for `{}`.\n\nPlease select a result to display:", &term)).components(|c| {
+                                        message.content(format!("Displaying resuls for `{}`.\n\nPlease select a result to display:", &q)).components(|c| {
                                             c.create_action_row(|ar| {
                                                 ar.create_select_menu(|sm| {
                                                     sm.custom_id("select_doc_entry");
