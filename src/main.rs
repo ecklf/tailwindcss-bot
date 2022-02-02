@@ -1,9 +1,12 @@
 use anyhow::Error;
 use dotenv::dotenv;
 use serenity::{
-    async_trait, framework::standard::StandardFramework, http::Http, 
+    async_trait,
+    framework::standard::StandardFramework,
+    http::Http,
     // model::channel::Message,
-    model::prelude::*, prelude::*,
+    model::prelude::*,
+    prelude::*,
 };
 use std::env;
 use tailwind_bot::{

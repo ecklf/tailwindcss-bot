@@ -175,7 +175,8 @@ pub async fn search_tailwind_docs(query: &str) -> Result<Vec<DocResult>, Error> 
     let api_key =
         env::var("ALGOLIA_API_KEY").expect("ALGOLIA_API_KEY is undefined. Check your .env");
     let app_id = env::var("ALGOLIA_APP_ID").expect("ALGOLIA_APP_ID is undefined. Check your .env");
-    let tailwind_version = env::var("TAILWIND_VERSION").expect("TAILWIND_VERSION is undefined. Check your .env");
+    let tailwind_version =
+        env::var("TAILWIND_VERSION").expect("TAILWIND_VERSION is undefined. Check your .env");
 
     headers.insert("x-algolia-api-key", api_key.parse().unwrap());
     headers.insert("x-algolia-application-id", app_id.parse().unwrap());
