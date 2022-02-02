@@ -175,14 +175,15 @@ pub async fn search_tailwind_docs(query: &str) -> Result<Vec<DocResult>, Error> 
     let api_key =
         env::var("ALGOLIA_API_KEY").expect("ALGOLIA_API_KEY is undefined. Check your .env");
     let app_id = env::var("ALGOLIA_APP_ID").expect("ALGOLIA_APP_ID is undefined. Check your .env");
+    let tailwind_version = env::var("TAILWIND_VERSION").expect("TAILWIND_VERSION is undefined. Check your .env");
 
     headers.insert("x-algolia-api-key", api_key.parse().unwrap());
     headers.insert("x-algolia-application-id", app_id.parse().unwrap());
 
     let res: Result<AlgoliaResponse, Error> = client
-        .post(format!("https://{}.algolia.net/1/indexes/*/queries", app_id))
+        .post(format!("https://{}-dsn.algolia.net/1/indexes/*/queries", app_id))
         .headers(headers)
-        .body(format!("{{\"requests\":[{{\"indexName\":\"tailwindcss\",\"query\":\"{}\",\"params\":\"hitsPerPage={}&highlightPreTag=%2A%2A&highlightPostTag=%2A%2A&attributesToRetrieve=%5B%22hierarchy.lvl0%22%2C%22hierarchy.lvl1%22%2C%22hierarchy.lvl2%22%2C%22hierarchy.lvl3%22%2C%22hierarchy.lvl4%22%2C%22hierarchy.lvl5%22%2C%22hierarchy.lvl6%22%2C%22content%22%2C%22type%22%2C%22url%22%5D&attributesToSnippet=%5B%22hierarchy.lvl1%3A10%22%2C%22hierarchy.lvl2%3A10%22%2C%22hierarchy.lvl3%3A10%22%2C%22hierarchy.lvl4%3A10%22%2C%22hierarchy.lvl5%3A10%22%2C%22hierarchy.lvl6%3A10%22%2C%22content%3A10%22%5D&snippetEllipsisText=%E2%80%A6&facetFilters=version%3Av2&distinct=1\"}}]}}", query, HITS_PER_PAGE))
+        .body(format!("{{\"requests\":[{{\"indexName\":\"tailwindcss\",\"query\":\"{}\",\"params\":\"hitsPerPage={}&highlightPreTag=%2A%2A&highlightPostTag=%2A%2A&attributesToRetrieve=%5B%22hierarchy.lvl0%22%2C%22hierarchy.lvl1%22%2C%22hierarchy.lvl2%22%2C%22hierarchy.lvl3%22%2C%22hierarchy.lvl4%22%2C%22hierarchy.lvl5%22%2C%22hierarchy.lvl6%22%2C%22content%22%2C%22type%22%2C%22url%22%5D&attributesToSnippet=%5B%22hierarchy.lvl1%3A10%22%2C%22hierarchy.lvl2%3A10%22%2C%22hierarchy.lvl3%3A10%22%2C%22hierarchy.lvl4%3A10%22%2C%22hierarchy.lvl5%3A10%22%2C%22hierarchy.lvl6%3A10%22%2C%22content%3A10%22%5D&snippetEllipsisText=%E2%80%A6&facetFilters=version%3Av{}&distinct=1\"}}]}}", query, HITS_PER_PAGE, tailwind_version))
         .send()
         .await?.json().await;
     match res {

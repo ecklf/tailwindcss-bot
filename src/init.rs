@@ -16,9 +16,6 @@ pub async fn set_global_commands(http: &Http) -> Result<Vec<ApplicationCommand>,
     let commands = ApplicationCommand::set_global_application_commands(&http, |commands| {
         commands
             .create_application_command(|command| {
-                command.name("ping").description("A ping command")
-            })
-            .create_application_command(|command| {
                 command
                     .name("docs")
                     .description("Search the Tailwind CSS documentation")
@@ -40,17 +37,17 @@ pub async fn set_global_commands(http: &Http) -> Result<Vec<ApplicationCommand>,
             .create_application_command(|command| {
                 command
                     .name("links")
-                    .description("Post quick links")
+                    .description("Post common links")
                     .create_option(|option| {
                         option
                             .name("choice")
                             .description("The link choice")
                             .kind(ApplicationCommandOptionType::String)
-                            .add_string_choice("Playground", "<https://play.tailwindcss.com>")
-                            .add_string_choice("Good Example", "<https://gist.github.com/RobinMalfait/490a0560a7cfde985d435ad93f8094c5>")
-                            .add_string_choice("Best Practises", "<https://gist.github.com/sandren/0f22e116f01611beab2b1195ab731b63>")
+                            .add_string_choice("Tailwind Play", "<https://play.tailwindcss.com>")
                             .add_string_choice("Awesome Tailwind CSS", "<https://github.com/aniftyco/awesome-tailwindcss>")
-                            .add_string_choice("Default Config", "<https://github.com/tailwindlabs/tailwindcss/blob/master/stubs/defaultConfig.stub.js>")
+                            .add_string_choice("Best Practises", "<https://gist.github.com/sandren/0f22e116f01611beab2b1195ab731b63>")
+                            .add_string_choice("Robin's Good Example", "<https://gist.github.com/RobinMalfait/490a0560a7cfde985d435ad93f8094c5>")
+                            .add_string_choice("Configuration Stubs", "<https://github.com/tailwindlabs/tailwindcss/tree/master/stubs>")
                             .required(true)
                     })
             })

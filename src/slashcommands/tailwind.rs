@@ -108,7 +108,7 @@ pub async fn docs(ctx: &Context, command: &ApplicationCommandInteraction) {
             };
 
             let content = match user_object {
-                // Wrapping in "<>" hides URL preview
+                // Wrapping messages in "<>" hides URL preview
                 Some(user) => {
                     format!("{}: <{}>", user.mention(), &component.data.values[0])
                 }
