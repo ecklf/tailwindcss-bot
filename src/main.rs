@@ -1,11 +1,7 @@
 use anyhow::Error;
 use dotenv::dotenv;
 use serenity::{
-    async_trait,
-    framework::standard::StandardFramework,
-    http::Http,
-    model::prelude::*,
-    prelude::*,
+    async_trait, framework::standard::StandardFramework, http::Http, model::prelude::*, prelude::*,
 };
 use std::env;
 use tailwind_bot::{
@@ -19,7 +15,8 @@ struct Handler;
 impl EventHandler for Handler {
     async fn ready(&self, ctx: Context, ready: Ready) {
         println!("{} is connected!", ready.user.name);
-        ctx.set_activity(Activity::watching("tailwindcss.com")).await;
+        ctx.set_activity(Activity::watching("tailwindcss.com"))
+            .await;
         let commands = set_global_commands(&ctx.http).await;
         println!("Available global slash commands: {:#?}", commands);
     }
