@@ -4,7 +4,6 @@ use serenity::{
     async_trait,
     framework::standard::StandardFramework,
     http::Http,
-    // model::channel::Message,
     model::prelude::*,
     prelude::*,
 };
@@ -18,19 +17,12 @@ struct Handler;
 
 #[async_trait]
 impl EventHandler for Handler {
-    // async fn message(&self, ctx: Context, msg: Message) {
-    //     if msg.content.to_lowercase().contains("can i ask") {
-    //         if let Err(why) = msg
-    //             .reply_mention(
-    //                 &ctx.http,
-    //                 "Please do not ask to ask. <https://dontasktoask.com>",
-    //             )
-    //             .await
-    //         {
-    //             println!("Error sending message: {}", why);
-    //         };
-    //     }
-    // }
+    async fn ready(&self, ctx: Context, ready: Ready) {
+        println!("{} is connected!", ready.user.name);
+        ctx.set_activity(Activity::watching("tailwindcss.com"));
+        let commands = set_global_commands(&ctx.http).await;
+        println!("Available global slash commands: {:#?}", commands);
+    }
 
     async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
         if let Interaction::ApplicationCommand(command) = interaction {
@@ -43,21 +35,13 @@ impl EventHandler for Handler {
             };
         }
     }
-
-    async fn ready(&self, ctx: Context, ready: Ready) {
-        println!("{} is connected!", ready.user.name);
-        let commands = set_global_commands(&ctx.http).await;
-        println!("Available global slash commands: {:#?}", commands);
-    }
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Error> {
+async fn main() -> Result<()> {
     dotenv().ok();
-    // Configure the client with your Discord bot token in the environment.
     let token = env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
 
-    // The Application Id is usually the Bot User Id.
     let application_id: u64 = env::var("APPLICATION_ID")
         .expect("Expected an application id in the environment")
         .parse()
@@ -65,7 +49,6 @@ async fn main() -> Result<(), Error> {
 
     let http = Http::new_with_token(&token);
 
-    // We will fetch your bot's id.
     let bot_id = match http.get_current_application_info().await {
         Ok(info) => info.id,
         Err(why) => panic!("Could not access application info: {:?}", why),
