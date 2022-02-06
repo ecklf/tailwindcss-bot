@@ -38,7 +38,7 @@ impl EventHandler for Handler {
 }
 
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() -> Result<(), Error> {
     dotenv().ok();
     let token = env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
 
