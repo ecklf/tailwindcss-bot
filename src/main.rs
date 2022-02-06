@@ -19,7 +19,7 @@ struct Handler;
 impl EventHandler for Handler {
     async fn ready(&self, ctx: Context, ready: Ready) {
         println!("{} is connected!", ready.user.name);
-        ctx.set_activity(Activity::watching("tailwindcss.com"));
+        ctx.set_activity(Activity::watching("tailwindcss.com")).await;
         let commands = set_global_commands(&ctx.http).await;
         println!("Available global slash commands: {:#?}", commands);
     }
